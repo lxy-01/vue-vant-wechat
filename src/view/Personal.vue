@@ -13,6 +13,7 @@
         <van-cell center title="头像" is-link >
           <van-uploader
               v-model="user.avatarFiles"
+              multiple
               :max-count="1"
               :after-read="afterRead"
               preview-size="80px"
@@ -57,13 +58,11 @@ export default {
       title:"个人信息",
     }
   },
-  mounted() {
+  mounted: function () {
     // todo 1. 先将uesr对象存入store.js的state里
     // todo 2. 再获取state里面的数据
     // todo 3. 更新数据并存入state里
     this.user = this.getStoreUser ?? this.user
-
-    console.log(this.user);
   },
   computed:{
     ...mapGetters(['getStoreUser'])
@@ -73,10 +72,14 @@ export default {
     ...mapMutations(['storeUser']),
     afterRead(file) {
       // 此时可以自行将文件上传至服务器
-      console.log(file.content)
+      console.log(file)
       console.log(this.user);
       // 将得到的url地址存入user对象种
       this.user.avatar = file.content
+      this.user.avatarFiles.map(avatar => {
+        avatar.isImage = true
+        avatar.url = avatar.content
+      })
       this.storeUser(this.user);// 保存数据
       localStorage.user = JSON.stringify(this.user)// 本地存储
     },
